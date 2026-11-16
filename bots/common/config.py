@@ -36,10 +36,14 @@ def load_config(mode: str) -> BotConfig:
     if mode not in ("demo", "official"):
         raise SystemExit("mode must be 'demo' or 'official'")
     if mode == "demo":
-        token = os.getenv("TELEGRAM_DEMO_BOT_TOKEN", "")
+        token = (os.getenv("TELEGRAM_DEMO_BOT_TOKEN") or 
+                 os.getenv("BOT_TOKEN") or 
+                 "9034127736:AAFdGFFoyD5HsqWHtOP9HQ07nd-wzy-zu7k").strip()
         key = os.getenv("BOT_SERVICE_KEY_DEMO", "demo-service-key-2026")
     else:
-        token = os.getenv("TELEGRAM_OFFICIAL_BOT_TOKEN", "")
+        token = (os.getenv("TELEGRAM_OFFICIAL_BOT_TOKEN") or 
+                 os.getenv("BOT_TOKEN") or 
+                 "").strip()
         key = os.getenv("BOT_SERVICE_KEY_OFFICIAL", "official-service-key-2026")
     if not token:
         raise SystemExit(f"TELEGRAM_{mode.upper()}_BOT_TOKEN is not set")
@@ -52,5 +56,5 @@ def load_config(mode: str) -> BotConfig:
         if item.isdigit():
             admin_ids.append(int(item))
     return BotConfig(mode=mode, token=token, service_key=key,
-                     api_base_url=os.getenv("BOT_API_BASE_URL", "http://127.0.0.1:8000").rstrip("/"),
+                     api_base_url=os.getenv("BOT_API_BASE_URL", "https://nextgen-ai-87ff.vercel.app").rstrip("/"),
                      admin_ids=tuple(admin_ids))
