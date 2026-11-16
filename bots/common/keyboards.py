@@ -19,6 +19,7 @@ def main_menu(language: str, *, is_demo: bool, is_admin: bool = False) -> Inline
     ]
     if not is_demo:
         rows.append([InlineKeyboardButton(text=t(language, "upload"), callback_data="menu:upload")])
+    rows.append([InlineKeyboardButton(text="📱 Android APK yuklab olish", callback_data="menu:apk")])
     if is_admin:
         rows.append([InlineKeyboardButton(text="👑 Admin Panel", callback_data="menu:admin")])
     rows.append([InlineKeyboardButton(text=t(language, "help"), callback_data="menu:help")])

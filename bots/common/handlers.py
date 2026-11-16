@@ -357,6 +357,42 @@ def build_router(cfg: BotConfig, api: BackendClient, cache: SessionCache) -> Rou
         lang = cache.language(message.from_user.id)
         await message.answer(t(lang, "help_text"), reply_markup=back_keyboard(lang))
 
+    # ------------------------------------------------------------------ /apk
+    @router.message(Command("apk", "app"))
+    async def apk_cmd(message: Message) -> None:
+        await _send_apk(message)
+
+    @router.callback_query(F.data == "menu:apk")
+    async def cb_apk(cb: CallbackQuery) -> None:
+        await cb.answer()
+        await _send_apk(cb.message)
+
+    async def _send_apk(target: Message) -> None:
+        apk_candidates = [
+            os.path.abspath("NEXTGEN-AI.apk"),
+            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "NEXTGEN-AI.apk")),
+            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "public", "NEXTGEN-AI.apk")),
+        ]
+        apk_path = None
+        for p in apk_candidates:
+            if os.path.exists(p):
+                apk_path = p
+                break
+
+        if apk_path and os.path.exists(apk_path):
+            doc = FSInputFile(apk_path, filename="NEXTGEN-AI.apk")
+            await target.answer_document(
+                document=doc,
+                caption="📱 <b>NEXTGEN AI — Android Mobil Ilovasi (APK)</b>\n\n"
+                        "✅ <b>Versiya:</b> 1.0.0 (Release)\n"
+                        "👨‍💻 <b>Dasturchi:</b> Shohjahon Abdullayev\n"
+                        "⚡ <b>Qo'llab-quvvatlaydi:</b> Android 8.0 - 15 (Barcha telefonlar)\n"
+                        "🌐 <b>Cloud Server:</b> https://nextgen-ai-87ff.vercel.app\n\n"
+                        "<i>Faylni yuklab olib, to'g'ridan-to'g'ri telefoningizga o'rnating!</i>"
+            )
+        else:
+            await target.answer("⚠️ Kechirasiz, APK fayli serverda topilmadi.")
+
     # ------------------------------------------------- free-text AI questions
     @router.message(F.text & ~F.text.startswith("/"))
     async def free_text(message: Message, state: FSMContext) -> None:
